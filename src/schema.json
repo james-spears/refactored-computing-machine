@@ -1,0 +1,411 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "ArtifactEntity": {
+      "additionalProperties": false,
+      "properties": {
+        "assetIds": {
+          "items": {
+            "$ref": "#/definitions/UUID"
+          },
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "assetIds",
+        "id",
+        "name",
+        "version"
+      ],
+      "type": "object"
+    },
+    "ArtifactModel": {
+      "additionalProperties": false,
+      "properties": {
+        "assets": {
+          "items": {
+            "$ref": "#/definitions/AssetModel"
+          },
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "assets",
+        "id",
+        "name",
+        "version"
+      ],
+      "type": "object"
+    },
+    "AssetEntity": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "AssetModel": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "CriterionEntity": {
+      "additionalProperties": false,
+      "properties": {
+        "approverIds": {
+          "items": {
+            "$ref": "#/definitions/UUID"
+          },
+          "type": "array"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "approverIds",
+        "description",
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "CriterionModel": {
+      "additionalProperties": false,
+      "properties": {
+        "approvers": {
+          "items": {
+            "$ref": "#/definitions/UserModel"
+          },
+          "type": "array"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "approvers",
+        "description",
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "Entity": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UUID"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "GateEntity": {
+      "additionalProperties": false,
+      "properties": {
+        "criterionIds": {
+          "items": {
+            "$ref": "#/definitions/UUID"
+          },
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "criterionIds",
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "GateModel": {
+      "additionalProperties": false,
+      "properties": {
+        "criteria": {
+          "items": {
+            "$ref": "#/definitions/CriterionModel"
+          },
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "criteria",
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "Model": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UUID"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "PermissionEntity": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "role": {
+          "$ref": "#/definitions/Role"
+        },
+        "teamId": {
+          "$ref": "#/definitions/UUID"
+        },
+        "userId": {
+          "$ref": "#/definitions/UUID"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "teamId",
+        "userId"
+      ],
+      "type": "object"
+    },
+    "PermissionModel": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "role": {
+          "$ref": "#/definitions/Role"
+        },
+        "team": {
+          "$ref": "#/definitions/TeamModel"
+        },
+        "user": {
+          "$ref": "#/definitions/UserModel"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "team",
+        "user"
+      ],
+      "type": "object"
+    },
+    "ProjectEntity": {
+      "additionalProperties": false,
+      "properties": {
+        "assetIds": {
+          "items": {
+            "$ref": "#/definitions/UUID"
+          },
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "assetIds",
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "ProjectModel": {
+      "additionalProperties": false,
+      "properties": {
+        "assets": {
+          "items": {
+            "$ref": "#/definitions/AssetModel"
+          },
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "assets",
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "Role": {
+      "enum": [
+        "RELEASE_MANAGER",
+        "STAKE_HOLDER",
+        "AUDITOR",
+        "LEAD_DEVELOPER",
+        "DEVELOPER",
+        "LEAD_QA",
+        "QA"
+      ],
+      "type": "string"
+    },
+    "TeamEntity": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        },
+        "userIds": {
+          "items": {
+            "$ref": "#/definitions/UUID"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "userIds"
+      ],
+      "type": "object"
+    },
+    "TeamModel": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "name": {
+          "type": "string"
+        },
+        "users": {
+          "items": {
+            "$ref": "#/definitions/UserModel"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "users"
+      ],
+      "type": "object"
+    },
+    "UUID": {
+      "type": "string"
+    },
+    "UserEntity": {
+      "additionalProperties": false,
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "id",
+        "password"
+      ],
+      "type": "object"
+    },
+    "UserModel": {
+      "additionalProperties": false,
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "id",
+        "password"
+      ],
+      "type": "object"
+    }
+  }
+}
+

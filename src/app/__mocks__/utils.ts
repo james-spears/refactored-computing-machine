@@ -8,9 +8,11 @@ import {
   ProjectEntity,
   TeamEntity,
   UserEntity,
-} from '@/entities';
-import { Filter, Repository } from '@/repositories';
-import { Role } from '@/types';
+  ReleaseEntity,
+  JSONDateString,
+  Role,
+} from '@/app/entities';
+import { Repository } from '@/app/repositories';
 import { randomUUID, UUID } from 'node:crypto';
 
 export class Database<T extends Entity> implements Repository<T> {
@@ -20,27 +22,39 @@ export class Database<T extends Entity> implements Repository<T> {
     this.objects = objects;
   }
 
-  add(entity: T): void {
+  async add(entity: T): Promise<string> {
     this.objects.push(entity);
+    return entity.id;
   }
 
-  get(id: UUID): T | void {
+  async get(id: string): Promise<T | undefined> {
     return this.objects.find((item) => item.id === id);
   }
 
-  remove(id: UUID): T | void {
+  async remove(id: string): Promise<boolean> {
     const index = this.objects.findIndex((item) => item.id === id);
-    if (index) {
-      return this.objects.splice(index, 1)[0];
+    if (index !== -1) {
+      this.objects.splice(index, 1)[0];
+      return true;
+    } else {
+      return false;
     }
   }
 
-  list(filter?: Filter): T[] {
+  async update(entity: Partial<T> & Pick<T, 'id'>): Promise<string | undefined> {
+    const index = this.objects.findIndex((item) => item.id === entity.id);
+    if (index !== -1) {
+      this.objects[index] = { ...this.objects[index], ...entity };
+      return this.objects[index].id;
+    }
+  }
+
+  async list(): Promise<T[]> {
     return this.objects;
   }
 }
 
-function getRandomItem<T>(arr: Array<T>): T {
+export function getRandomItem<T>(arr: Array<T>): T {
   const index = Math.floor(Math.random() * arr.length);
   return arr[index];
 }
@@ -51,7 +65,7 @@ export const mockUser: () => UserEntity = () => ({
   password: 'password',
 });
 
-const users: UserEntity[] = [];
+export const users: UserEntity[] = [];
 
 for (let i = 0; i < 40; i++) {
   users.push(mockUser());
@@ -72,7 +86,7 @@ export const mockTeam: () => TeamEntity = () => {
   };
 };
 
-const teams: TeamEntity[] = [];
+export const teams: TeamEntity[] = [];
 
 for (let i = 0; i < 10; i++) {
   teams.push(mockTeam());
@@ -89,7 +103,7 @@ export const mockPermission: () => PermissionEntity = () => {
   };
 };
 
-const permissions: PermissionEntity[] = [];
+export const permissions: PermissionEntity[] = [];
 
 for (let i = 0; i < 50; i++) {
   permissions.push(mockPermission());
@@ -102,7 +116,7 @@ export const mockAsset: () => AssetEntity = () => {
   };
 };
 
-const assets: AssetEntity[] = [];
+export const assets: AssetEntity[] = [];
 
 for (let i = 0; i < 30; i++) {
   assets.push(mockAsset());
@@ -124,7 +138,7 @@ export const mockArtifact: () => ArtifactEntity = () => {
   };
 };
 
-const artifacts: ArtifactEntity[] = [];
+export const artifacts: ArtifactEntity[] = [];
 
 for (let i = 0; i < 500; i++) {
   artifacts.push(mockArtifact());
@@ -145,10 +159,32 @@ export const mockProject: () => ProjectEntity = () => {
   };
 };
 
-const projects: ProjectEntity[] = [];
+export const projects: ProjectEntity[] = [];
 
 for (let i = 0; i < 20; i++) {
   projects.push(mockProject());
+}
+
+export const mockRelease: () => ReleaseEntity = () => {
+  const projectIds: UUID[] = [];
+  for (let i = 0; i < 10; i++) {
+    const item = getRandomItem(projects);
+    if (!projectIds.includes(item.id)) {
+      projectIds.push(item.id);
+    }
+  }
+  return {
+    id: randomUUID(),
+    name: `Release ${Math.ceil(Math.random() * 1000)}`,
+    date: new Date().toJSON() as JSONDateString,
+    projectIds,
+  };
+};
+
+export const releases: ReleaseEntity[] = [];
+
+for (let i = 0; i < 15; i++) {
+  releases.push(mockRelease());
 }
 
 export const mockCriterion: () => CriterionEntity = () => {
@@ -175,7 +211,7 @@ export const mockCriterion: () => CriterionEntity = () => {
   };
 };
 
-const criteria: CriterionEntity[] = [];
+export const criteria: CriterionEntity[] = [];
 
 for (let i = 0; i < 100; i++) {
   criteria.push(mockCriterion());
@@ -196,17 +232,8 @@ export const mockGate: () => GateEntity = () => {
   };
 };
 
-const gates: GateEntity[] = [];
+export const gates: GateEntity[] = [];
 
 for (let i = 0; i < 25; i++) {
   gates.push(mockGate());
 }
-
-export const UserDatabase = new Database(users);
-export const TeamDatabase = new Database(teams);
-export const PermissionDatabase = new Database(permissions);
-export const AssetDatabase = new Database(assets);
-export const ArtifactDatabase = new Database(artifacts);
-export const ProjectDatabase = new Database(projects);
-export const CriterionDatabase = new Database(criteria);
-export const GateDatabase = new Database(gates);

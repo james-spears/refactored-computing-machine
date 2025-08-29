@@ -5,9 +5,10 @@ import {
   GateModel,
   PermissionModel,
   ProjectModel,
+  ReleaseModel,
   TeamModel,
   UserModel,
-} from '@/models';
+} from '@/app/models';
 import {
   mockArtifact,
   mockAsset,
@@ -15,9 +16,11 @@ import {
   mockGate,
   mockPermission,
   mockProject,
+  mockRelease,
   mockTeam,
   mockUser,
-} from '@/mocks';
+} from '@/app/__mocks__/utils';
+jest.mock('@/app/database');
 
 describe('UserModel', () => {
   const entity = mockUser();
@@ -72,6 +75,16 @@ describe('ArtifactModel', () => {
 describe('ProjectModel', () => {
   const entity = mockProject();
   const instance = new ProjectModel(entity);
+  test('should pass', () => {
+    const spy = jest.spyOn(instance, 'toJSON');
+    expect(JSON.stringify(instance)).toBe(JSON.stringify(instance.toJSON()));
+    expect(spy).toHaveBeenCalled();
+  });
+});
+
+describe('ReleaseModel', () => {
+  const entity = mockRelease();
+  const instance = new ReleaseModel(entity);
   test('should pass', () => {
     const spy = jest.spyOn(instance, 'toJSON');
     expect(JSON.stringify(instance)).toBe(JSON.stringify(instance.toJSON()));

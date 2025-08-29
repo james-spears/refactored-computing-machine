@@ -15,10 +15,11 @@
   "type": "module",
   "scripts": {
     "start": "node ./dist/index.js",
+    "predev": "npm run schema",
     "dev": "nodemon -L --exec \"npm run build && npm run start\" --watch ./src/**",
     "doc": "typedoc ./src/index.ts",
-    "schema": "ts-json-schema-generator -p src/schema.ts > src/schema.json",
-    "test": "jest --detectOpenHandles --coverage",
+    "schema": "ts-json-schema-generator -p src/app/schema.ts > src/app/schema.json",
+    "test": "jest --detectOpenHandles --coverage --no-cache",
     "prebuild": "rm -rf ./dist",
     "build": "rollup -c rollup.config.js",
     "format": "prettier . --write",
@@ -36,9 +37,11 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.2",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.16.5",
+    "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
     "eslint": "^9.28.0",
@@ -46,6 +49,7 @@
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "rollup": "^4.43.0",
+    "supertest": "^7.1.4",
     "ts-json-schema-generator": "^2.4.0",
     "tslib": "^2.8.1",
     "typedoc": "^0.28.5",
@@ -67,7 +71,13 @@
     "test": "test"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "jose": "^6.1.0",
+    "mongodb": "^6.19.0"
   }
 }

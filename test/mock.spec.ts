@@ -7,60 +7,61 @@ import {
   ProjectDatabase,
   TeamDatabase,
   UserDatabase,
-} from '@/mocks';
+} from '@/app/database';
+jest.mock('@/app/database');
 
 describe('UserDatabase', () => {
-  const db = UserDatabase;
-  test('should pass', () => {
-    expect(db.list().length).toBe(40);
+  test('should pass', async () => {
+    const db = await UserDatabase;
+    expect((await db.list()).length).toBe(40);
   });
 });
 
 describe('TeamDatabase', () => {
-  const db = TeamDatabase;
-  test('should pass', () => {
-    expect(db.list().length).toBe(10);
+  test('should pass', async () => {
+    const db = await TeamDatabase;
+    expect((await db.list()).length).toBe(10);
   });
 });
 
 describe('PermissionDatabase', () => {
-  const db = PermissionDatabase;
-  test('should pass', () => {
-    expect(db.list().length).toBe(50);
+  test('should pass', async () => {
+  
+  const db = await PermissionDatabase;  expect((await db.list()).length).toBe(50);
   });
 });
 
 describe('AssetDatabase', () => {
-  const db = AssetDatabase;
-  test('should pass', () => {
-    expect(db.list().length).toBe(30);
+  test('should pass', async () => {
+
+const db = await AssetDatabase;    expect((await db.list()).length).toBe(30);
   });
 });
 
 describe('ArtifactDatabase', () => {
-  const db = ArtifactDatabase;
-  test('should pass', () => {
-    expect(db.list().length).toBe(500);
+  test('should pass', async () => {
+  
+  const db = await ArtifactDatabase;  expect((await db.list()).length).toBe(500);
   });
 });
 
 describe('ProjectDatabase', () => {
-  const db = ProjectDatabase;
-  test('should pass', () => {
-    expect(db.list().length).toBe(20);
+  test('should pass', async () => {
+  
+  const db = await ProjectDatabase;  expect((await db.list()).length).toBe(20);
   });
 });
 
 describe('CriterionDatabase', () => {
-  const db = CriterionDatabase;
-  test('should pass', () => {
-    expect(db.list().length).toBe(100);
+  test('should pass', async () => {
+  
+  const db = await CriterionDatabase;  expect((await db.list()).length).toBe(100);
   });
 });
 
 describe('GateDatabase', () => {
-  const db = GateDatabase;
-  test('should pass', () => {
-    expect(db.list().length).toBe(25);
+  test('should pass', async () => {
+    const db = await GateDatabase;
+    expect((await db.list()).length).toBe(25);
   });
 });

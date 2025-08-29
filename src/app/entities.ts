@@ -1,5 +1,14 @@
 import { UUID } from 'crypto';
-import { Role } from './types';
+
+export enum Role {
+  RELEASE_MANAGER = 'RELEASE_MANAGER',
+  STAKE_HOLDER = 'STAKE_HOLDER',
+  AUDITOR = 'AUDITOR',
+  LEAD_DEVELOPER = 'LEAD_DEVELOPER',
+  DEVELOPER = 'DEVELOPER',
+  LEAD_QA = 'LEAD_QA',
+  QA = 'QA',
+}
 
 export interface Entity {
   id: UUID;
@@ -34,6 +43,14 @@ export interface ArtifactEntity extends Entity {
 export interface ProjectEntity extends Entity {
   name: string;
   assetIds: UUID[];
+}
+
+export type JSONDateString =
+  `${number}-${number}-${number}T${number}:${number}:${number}.${number}Z`;
+export interface ReleaseEntity extends Entity {
+  name: string;
+  date: JSONDateString;
+  projectIds: UUID[];
 }
 
 export interface CriterionEntity extends Entity {

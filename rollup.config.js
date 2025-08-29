@@ -8,11 +8,11 @@ export default [
     input: 'src/index.ts',
     output: {
       file: './dist/index.js',
-      format: 'es',
+      format: 'esm',
       exports: 'named',
       sourcemap: true,
     },
-    external: ['iovalkey', 'mongodb'],
+    external: ['dotenv/config', 'express', 'mongodb'],
     plugins: [
       commonjs(),
       json(),

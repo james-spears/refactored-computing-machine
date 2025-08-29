@@ -1,13 +1,14 @@
 import express, { Request, Response, NextFunction } from 'express';
 import * as handlers from '@/server/handlers';
+import { authLimiter } from './auth';
 const router = express.Router();
 
 // middleware that is specific to this router
-const timeLog = (req: Request, res: Response, next: NextFunction) => {
-  console.log('Time: ', Date.now());
-  next();
-};
-router.use(timeLog);
+// const timeLog = (req: Request, res: Response, next: NextFunction) => {
+//   console.log('Time: ', Date.now());
+//   next();
+// };
+// router.use(timeLog);
 
 export enum Route {
   AUTH_REGISTER = '/auth/register',
@@ -73,7 +74,7 @@ export enum Route {
 }
 
 // AUTH
-router.post(Route.AUTH_REGISTER, handlers.authRegister);
+router.post(Route.AUTH_REGISTER, authLimiter, handlers.authRegister);
 router.post(Route.AUTH_LOGIN, handlers.authLogin);
 router.post(Route.AUTH_REFRESH, handlers.authRefresh);
 router.get(Route.AUTH_GET_PROFILE, handlers.authGetProfile);

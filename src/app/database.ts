@@ -38,8 +38,8 @@ export class Database<T extends Entity> implements Repository<T> {
     return res.insertedId.toString();
   }
 
-  async get(id: string): Promise<T | undefined> {
-    const doc = await this.collection.findOne<T>({ id });
+  async get(filter: Record<string, unknown>): Promise<T | undefined> {
+    const doc = await this.collection.findOne<T>(filter);
     if (doc) {
       return doc;
     }

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
-import * as jose from 'jose';
+import { SignJWT, jwtVerify } from 'jose';
 import crypto from 'node:crypto';
 
 // JWT configuration
@@ -74,7 +74,7 @@ export const generateTokens = async (userId: string, email: string) => {
   const now = Math.floor(Date.now() / 1000);
 
   // Access token (15 minutes)
-  const accessToken = await new jose.SignJWT({
+  const accessToken = await new SignJWT({
     sub: userId,
     email,
     type: 'access',
@@ -87,7 +87,7 @@ export const generateTokens = async (userId: string, email: string) => {
     .sign(JWT_SECRET);
 
   // Refresh token (7 days)
-  const refreshToken = await new jose.SignJWT({
+  const refreshToken = await new SignJWT({
     sub: userId,
     email,
     type: 'refresh',
@@ -104,7 +104,7 @@ export const generateTokens = async (userId: string, email: string) => {
 
 export const verifyToken = async (token: string) => {
   try {
-    const { payload } = await jose.jwtVerify(token, JWT_SECRET, {
+    const { payload } = await jwtVerify(token, JWT_SECRET, {
       issuer: JWT_ISSUER,
       audience: JWT_AUDIENCE,
     });

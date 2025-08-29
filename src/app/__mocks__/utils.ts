@@ -27,8 +27,8 @@ export class Database<T extends Entity> implements Repository<T> {
     return entity.id;
   }
 
-  async get(id: string): Promise<T | undefined> {
-    return this.objects.find((item) => item.id === id);
+  async get(filter: Record<string, unknown>): Promise<T | undefined> {
+    return this.objects.find((item) => item.id === filter.id);
   }
 
   async remove(id: string): Promise<boolean> {
@@ -62,7 +62,7 @@ export function getRandomItem<T>(arr: Array<T>): T {
 export const mockUser: () => UserEntity = () => ({
   id: randomUUID(),
   email: `joe_${Math.ceil(Math.random() * 1000)}@example.com`,
-  password: 'password',
+  password: '@ABC123xyz',
 });
 
 export const users: UserEntity[] = [];

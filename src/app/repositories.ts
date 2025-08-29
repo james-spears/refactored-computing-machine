@@ -15,7 +15,7 @@ import {
 
 export interface Repository<T extends Entity> {
   add(entity: T): Promise<string | undefined>;
-  get(id: string): Promise<T | undefined>;
+  get(filter: Record<string, unknown>): Promise<T | undefined>;
   remove(id: string): Promise<boolean>;
   update(update: Partial<T> & Pick<T, 'id'>): Promise<string | undefined>;
   list(): Promise<T[]>;

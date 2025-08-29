@@ -78,6 +78,7 @@
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
     "jose": "^6.1.0",
-    "mongodb": "^6.19.0"
+    "mongodb": "^6.19.0",
+    "pino": "^9.9.0"
   }
 }

@@ -36,14 +36,24 @@ import {
 jest.mock('@/app/database');
 jest.mock('jose');
 
-describe('API E2E Tests', () => {
 
+describe('API E2E Tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   afterAll(() => {
     server.close();
+  });
+
+  describe('Auth', () => {
+    it('register', async () => {
+      const entity = getRandomItem<UserEntity>(users);
+      const res = await request(app).post(`/api/v1/auth/register`).send(entity);
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.tokens.accessToken).toBe('mocked_jwt_token');
+      expect(res.body.tokens.refreshToken).toBe('mocked_jwt_token');
+    });
   });
 
   describe('Users', () => {

@@ -37,12 +37,12 @@ export enum ErrorMessage {
 function registerUser<T extends Entity>(repository: Repository<T>) {
   return async (req: Request, res: Response) => {
     try {
-      const { email, password, name } = req.body;
+      const { email, password /*, name */} = req.body;
 
       // Validate required fields
-      if (!email || !password || !name) {
+      if (!email || !password /*|| !name*/) {
         res.status(400).json({
-          error: 'Email, password, and name are required',
+          error: 'Email, and password are required',
         });
         return;
       }
@@ -56,11 +56,12 @@ function registerUser<T extends Entity>(repository: Repository<T>) {
       }
 
       // Check if user already exists
-      // if (users.has(email.toLowerCase())) {
-      //   return res.status(409).json({
-      //     error: 'User already exists with this email'
-      //   });
-      // }
+      if (await repository.get({ email: email.toLowerCase() })) {
+        res.status(409).json({
+          error: 'User already exists with this email',
+        });
+        return;
+      }
 
       // Validate password strength
       const passwordValidation = validatePasswordStrength(password);
@@ -81,7 +82,7 @@ function registerUser<T extends Entity>(repository: Repository<T>) {
       const user = {
         id: userId,
         email: email.toLowerCase(),
-        name: name.trim(),
+        // name: name.trim(),
         password: hashedPassword,
         createdAt: new Date().toISOString(),
         isActive: true,
@@ -97,7 +98,7 @@ function registerUser<T extends Entity>(repository: Repository<T>) {
         user: {
           id: user.id,
           email: user.email,
-          name: user.name,
+          // name: user.name,
           createdAt: user.createdAt,
         },
         tokens,
@@ -198,7 +199,7 @@ function refreshToken(repository: Repository<UserEntity>) {
 function getUserProfile(repository: Repository<UserEntity>) {
   return async (req: Request, res: Response) => {
     try {
-      const user = await repository.get(req.user!.email + '');
+      const user = await repository.get({ email: req.user!.email + '' });
 
       if (!user /*|| !user.isActive*/) {
         res.status(404).json({ error: 'User not found' });
@@ -224,7 +225,7 @@ function updateUserProfile(repository: Repository<UserEntity>) {
   return async (req: Request, res: Response) => {
     try {
       const { name, currentPassword, newPassword } = req.body;
-      const user = await repository.get(req.user!.email + '');
+      const user = await repository.get({ email: req.user!.email + '' });
 
       if (!user /*|| !user.isActive*/) {
         res.status(404).json({ error: 'User not found' });
@@ -305,7 +306,7 @@ export const authLogout = logoutUser(UserDatabase);
 
 function getEntity<T extends Entity>(repository: Repository<T>) {
   return async (req: Request, res: Response) => {
-    const entity = await repository.get(req.params.id);
+    const entity = await repository.get({ id: req.params.id });
     if (!entity) {
       res.status(404);
       res.json({ error: ErrorMessage.NOT_FOUND });

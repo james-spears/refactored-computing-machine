@@ -33,6 +33,7 @@ import {
   UserEntity,
   Role,
 } from '@/app/entities';
+import { UserDatabase } from '@/app/database';
 jest.mock('@/app/database');
 jest.mock('jose');
 
@@ -116,6 +117,19 @@ describe('API E2E Tests', () => {
       expect(res.statusCode).toEqual(200);
       expect(res.body.tokens.accessToken).toBe('mocked_jwt_token');
       expect(res.body.tokens.refreshToken).toBe('mocked_jwt_token');
+    });
+
+    it('reset password', async () => {
+      let entity = getRandomItem<UserEntity>(users);
+      let user = await UserDatabase.get({ id: entity.id });
+      expect(entity.resetPasswordToken).toBeUndefined();
+      let res = await request(app)
+        .post(`/api/v1/auth/request-reset`)
+        .send({ email: entity.email });
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      user = await UserDatabase.get({ id: entity.id });
+      expect(user?.resetPasswordToken).toBe('mocked_jwt_token');
     });
   });
 

@@ -17,6 +17,7 @@ export interface Entity extends Record<string, unknown> {
 export interface UserEntity extends Entity {
   email: string;
   password: string;
+  resetPasswordToken?: string;
 }
 
 export interface TeamEntity extends Entity {

@@ -102,6 +102,25 @@ export const generateTokens = async (userId: string, email: string) => {
   return { accessToken, refreshToken };
 };
 
+export const generateResetToken = async (userId: string, email: string) => {
+  const now = Math.floor(Date.now() / 1000);
+
+  // Access token (60 minutes)
+  const resetToken = await new SignJWT({
+    sub: userId,
+    email,
+    type: 'reset',
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt(now)
+    .setIssuer(JWT_ISSUER)
+    .setAudience(JWT_AUDIENCE)
+    .setExpirationTime(now + 900 * 4) // 60 minutes
+    .sign(JWT_SECRET);
+
+  return { resetToken };
+};
+
 export const verifyToken = async (token: string) => {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET, {

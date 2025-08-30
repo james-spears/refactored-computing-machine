@@ -13,6 +13,7 @@ import {
   ReleaseDatabase,
 } from '@/app/database';
 import {
+  generateResetToken,
   generateTokens,
   validateEmail,
   validatePasswordStrength,
@@ -298,12 +299,74 @@ function logoutUser(repository: Repository<UserEntity>) {
   };
 }
 
+function requestPasswordReset(repository: Repository<UserEntity>) {
+  return async (req: Request, res: Response) => {
+    try {
+      // // Validate input
+      // const errors = validationResult(req);
+      // if (!errors.isEmpty()) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     errors: errors.array(),
+      //   });
+      // }
+
+      const { email } = req.body;
+
+      // Find user by email
+      const user = await repository.get({ email });
+
+      // Always return success to prevent email enumeration
+      // but only send email if user exists
+      if (user) {
+        // Generate reset token
+        const resetTokens = await generateResetToken(user.id, user.email);
+        user.resetPasswordToken = resetTokens.resetToken;
+        // Save reset token to database
+        await repository.update(user);
+
+        // Send reset email
+        // const emailSent = await sendResetEmail(email, resetToken);
+
+        // if (!emailSent) {
+        //   console.error(`Failed to send reset email to ${email}`);
+        // }
+      }
+
+      // Always return success response
+      res.json({
+        success: true,
+        message:
+          'If an account with that email exists, a password reset link has been sent.',
+      });
+    } catch (error) {
+      console.error('Password reset request error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'An error occurred processing your request. Please try again.',
+      });
+    }
+  };
+}
+
+function resetPassword(repository: Repository<UserEntity>) {
+  return async (req: Request, res: Response) => {
+    // In a production environment, you would typically:
+    // 1. Add the token to a blacklist
+    // 2. Store blacklisted tokens in Redis or database
+    // 3. Check blacklist in the authenticateToken middleware
+    res.json({ message: 'Logged out successfully' });
+  };
+}
+
 export const authRegister = registerUser(UserDatabase);
 export const authLogin = loginUser(UserDatabase);
 export const authRefresh = refreshToken(UserDatabase);
 export const authGetProfile = getUserProfile(UserDatabase);
 export const authUpdateProfile = updateUserProfile(UserDatabase);
 export const authLogout = logoutUser(UserDatabase);
+export const authRequestReset = requestPasswordReset(UserDatabase);
+export const authReset = resetPassword(UserDatabase);
 
 function getEntity<T extends Entity>(repository: Repository<T>) {
   return async (req: Request, res: Response) => {

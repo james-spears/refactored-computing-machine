@@ -17,6 +17,8 @@ export enum Route {
   AUTH_GET_PROFILE = '/auth/profile',
   AUTH_UPDATE_PROFILE = '/auth/profile',
   AUTH_LOGOUT = '/auth/profile',
+  AUTH_REQUEST_RESET = '/auth/request-reset',
+  AUTH_RESET = '/auth/reset',
 
   GET_USER = '/users/:id',
   LIST_USERS = '/users',
@@ -80,6 +82,8 @@ router.post(Route.AUTH_REFRESH, handlers.authRefresh);
 router.get(Route.AUTH_GET_PROFILE, authenticateToken, handlers.authGetProfile);
 router.put(Route.AUTH_UPDATE_PROFILE, authenticateToken, handlers.authUpdateProfile);
 router.get(Route.AUTH_LOGOUT, authenticateToken, handlers.authLogout);
+router.post(Route.AUTH_REQUEST_RESET, authLimiter, handlers.authRequestReset);
+router.post(Route.AUTH_RESET, authLimiter, handlers.authReset);
 
 // USER
 router.get(Route.GET_USER, handlers.getUser);

@@ -4,5 +4,5 @@ export default {
   moduleNameMapper: {
     // '^@/app/database$': '<rootDir>/src/app/__mocks__/database.ts',
     '@/(.*)': ['<rootDir>/src/$1'],
-  }
+  },
 };

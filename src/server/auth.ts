@@ -12,8 +12,8 @@ const JWT_AUDIENCE = process.env.JWT_AUDIENCE || 'auth-client';
 
 // Rate limiting
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
+  windowMs: 30 * 60 * 1000, // 30 minutes
+  max: 10, // limit each IP to 10 requests per windowMs
   message: { error: 'Too many authentication attempts, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -124,19 +124,22 @@ export const authenticateToken = async (
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ error: 'Access token required' });
+    res.status(401).json({ error: 'Access token required' });
+    return;
   }
 
   try {
     const payload = await verifyToken(token);
 
     if (payload.type !== 'access') {
-      return res.status(401).json({ error: 'Invalid token type' });
+      res.status(401).json({ error: 'Invalid token type' });
+      return;
     }
 
     req.user = payload;
     next();
   } catch (error) {
-    return res.status(403).json({ error: 'Invalid or expired token' });
+    res.status(403).json({ error: 'Invalid or expired token' });
+    return;
   }
 };

@@ -10,7 +10,7 @@ export enum Role {
   QA = 'QA',
 }
 
-export interface Entity {
+export interface Entity extends Record<string, unknown> {
   id: UUID;
 }
 

@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import * as handlers from '@/server/handlers';
-import { authLimiter } from './auth';
+import { authenticateToken, authLimiter } from './auth';
 const router = express.Router();
 
 // middleware that is specific to this router
@@ -75,11 +75,11 @@ export enum Route {
 
 // AUTH
 router.post(Route.AUTH_REGISTER, authLimiter, handlers.authRegister);
-router.post(Route.AUTH_LOGIN, handlers.authLogin);
+router.post(Route.AUTH_LOGIN, authLimiter, handlers.authLogin);
 router.post(Route.AUTH_REFRESH, handlers.authRefresh);
-router.get(Route.AUTH_GET_PROFILE, handlers.authGetProfile);
-router.put(Route.AUTH_UPDATE_PROFILE, handlers.authUpdateProfile);
-router.get(Route.AUTH_LOGOUT, handlers.authLogout);
+router.get(Route.AUTH_GET_PROFILE, authenticateToken, handlers.authGetProfile);
+router.put(Route.AUTH_UPDATE_PROFILE, authenticateToken, handlers.authUpdateProfile);
+router.get(Route.AUTH_LOGOUT, authenticateToken, handlers.authLogout);
 
 // USER
 router.get(Route.GET_USER, handlers.getUser);

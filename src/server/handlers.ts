@@ -34,10 +34,10 @@ export enum ErrorMessage {
     AUTH_UPDATE_PROFILE = '/auth/profile',
     AUTH_LOGOUT = '/auth/profile',
 */
-function registerUser<T extends Entity>(repository: Repository<T>) {
+function registerUser(repository: Repository<UserEntity>) {
   return async (req: Request, res: Response) => {
     try {
-      const { email, password /*, name */} = req.body;
+      const { email, password /*, name */ } = req.body;
 
       // Validate required fields
       if (!email || !password /*|| !name*/) {
@@ -84,11 +84,11 @@ function registerUser<T extends Entity>(repository: Repository<T>) {
         email: email.toLowerCase(),
         // name: name.trim(),
         password: hashedPassword,
-        createdAt: new Date().toISOString(),
-        isActive: true,
+        // createdAt: new Date().toISOString(),
+        // isActive: true,
       };
 
-      // users.set(email.toLowerCase(), user);
+      await repository.add(user);
 
       // Generate tokens
       const tokens = await generateTokens(userId, email.toLowerCase());
@@ -99,7 +99,7 @@ function registerUser<T extends Entity>(repository: Repository<T>) {
           id: user.id,
           email: user.email,
           // name: user.name,
-          createdAt: user.createdAt,
+          // createdAt: user.createdAt,
         },
         tokens,
       });
@@ -123,7 +123,7 @@ function loginUser(repository: Repository<UserEntity>) {
       }
 
       // Find user
-      const user = await repository.get(email.toLowerCase());
+      const user = await repository.get({ email: email.toLowerCase() });
       if (!user /*|| !user.isActive*/) {
         res.status(401).json({
           error: 'Invalid credentials',
@@ -176,11 +176,12 @@ function refreshToken(repository: Repository<UserEntity>) {
         return;
       }
 
-      // // Verify user still exists and is active
-      // const user = users.get(payload.email);
-      // if (!user || !user.isActive) {
-      //   return res.status(401).json({ error: 'User not found or inactive' });
-      // }
+      // Verify user still exists and is active
+      const user = repository.get({ email: payload.email });
+      if (!user /*|| !user.isActive*/) {
+        res.status(401).json({ error: 'User not found or inactive' });
+        return;
+      }
 
       // Generate new tokens
       const tokens = await generateTokens(payload.sub!, payload.email as string);
@@ -199,7 +200,7 @@ function refreshToken(repository: Repository<UserEntity>) {
 function getUserProfile(repository: Repository<UserEntity>) {
   return async (req: Request, res: Response) => {
     try {
-      const user = await repository.get({ email: req.user!.email + '' });
+      const user = await repository.get({ email: req.user?.email + '' });
 
       if (!user /*|| !user.isActive*/) {
         res.status(404).json({ error: 'User not found' });
@@ -224,7 +225,7 @@ function getUserProfile(repository: Repository<UserEntity>) {
 function updateUserProfile(repository: Repository<UserEntity>) {
   return async (req: Request, res: Response) => {
     try {
-      const { name, currentPassword, newPassword } = req.body;
+      const { currentPassword, newPassword } = req.body;
       const user = await repository.get({ email: req.user!.email + '' });
 
       if (!user /*|| !user.isActive*/) {
@@ -269,7 +270,7 @@ function updateUserProfile(repository: Repository<UserEntity>) {
       }
 
       // user.updatedAt = new Date().toISOString();
-      // users.set(req.user.email, user);
+      await repository.update(user);
 
       res.json({
         message: 'Profile updated successfully',

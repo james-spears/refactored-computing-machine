@@ -36,7 +36,6 @@ import {
 jest.mock('@/app/database');
 jest.mock('jose');
 
-
 describe('API E2E Tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -48,9 +47,73 @@ describe('API E2E Tests', () => {
 
   describe('Auth', () => {
     it('register', async () => {
-      const entity = getRandomItem<UserEntity>(users);
-      const res = await request(app).post(`/api/v1/auth/register`).send(entity);
+      let entity = getRandomItem<UserEntity>(users);
+      let res = await request(app).post(`/api/v1/auth/register`).send(entity);
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.tokens).toBeUndefined();
+      entity = mockUser();
+      while (users.includes(entity)) {
+        entity = mockUser();
+      }
+      res = await request(app).post(`/api/v1/auth/register`).send(entity);
       expect(res.statusCode).toEqual(201);
+      expect(res.body.tokens.accessToken).toBe('mocked_jwt_token');
+      expect(res.body.tokens.refreshToken).toBe('mocked_jwt_token');
+      res = await request(app).post(`/api/v1/auth/register`).send(entity);
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.tokens).toBeUndefined();
+    });
+
+    it('login + refresh', async () => {
+      let entity = getRandomItem<UserEntity>(users);
+      let res = await request(app).post(`/api/v1/auth/login`).send(entity);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.tokens.accessToken).toBe('mocked_jwt_token');
+      expect(res.body.tokens.refreshToken).toBe('mocked_jwt_token');
+
+      res.body.tokens.refreshToken = 'mocked_jwt_token_refresh';
+      res = await request(app).post(`/api/v1/auth/refresh`).send(res.body.tokens);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.tokens.accessToken).toBe('mocked_jwt_token');
+      expect(res.body.tokens.refreshToken).toBe('mocked_jwt_token');
+
+      entity = mockUser();
+      while (users.includes(entity)) {
+        entity = mockUser();
+      }
+      res = await request(app).post(`/api/v1/auth/login`).send(entity);
+      expect(res.body.error).toBe('Invalid credentials');
+      expect(res.statusCode).toEqual(401);
+      expect(res.body.tokens).toBeUndefined();
+    });
+
+    it('get profile + update profile (change password)', async () => {
+      let entity = users[0];
+      let res = await request(app).get(`/api/v1/auth/profile`);
+      expect(res.statusCode).toEqual(401);
+
+      res = await request(app)
+        .get(`/api/v1/auth/profile`)
+        .set('Authorization', 'Bearer mocked_jwt_token');
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.user.email).toBe(entity.email);
+
+      res = await request(app)
+        .put(`/api/v1/auth/profile`)
+        .set('Authorization', 'Bearer mocked_jwt_token')
+        .send({ currentPassword: '@ABC123xyz', newPassword: 'new@ABC123xyz' });
+      expect(res.body.error).toBeUndefined();
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.user.email).toBe(entity.email);
+
+      res = await request(app).post(`/api/v1/auth/login`).send(entity);
+      expect(res.body.error).toBe('Invalid credentials');
+      expect(res.statusCode).toEqual(401);
+
+      const updatedUser = users[0];
+      updatedUser.password = 'new@ABC123xyz';
+      res = await request(app).post(`/api/v1/auth/login`).send(updatedUser);
+      expect(res.statusCode).toEqual(200);
       expect(res.body.tokens.accessToken).toBe('mocked_jwt_token');
       expect(res.body.tokens.refreshToken).toBe('mocked_jwt_token');
     });

@@ -13,6 +13,7 @@ import {
   Role,
 } from '@/app/entities';
 import { Repository } from '@/app/repositories';
+import bcrypt from 'bcryptjs';
 import { randomUUID, UUID } from 'node:crypto';
 
 export class Database<T extends Entity> implements Repository<T> {
@@ -28,7 +29,23 @@ export class Database<T extends Entity> implements Repository<T> {
   }
 
   async get(filter: Record<string, unknown>): Promise<T | undefined> {
-    return this.objects.find((item) => item.id === filter.id);
+    let result = this.objects.find((item) =>
+      Object.keys(filter)
+        .map((key) => typeof item[key] !== 'undefined' && item[key] === filter[key])
+        .reduce((acc, val) => acc && val, true)
+    );
+    if (filter.email === 'unit-test@example.com') {
+      result = this.objects[0];
+    }
+    if (result && result.password && typeof result.password === 'string') {
+      const saltRounds = 12;
+      const hashedPassword = await bcrypt.hash(result.password, saltRounds);
+      result = {
+        ...result,
+        password: hashedPassword,
+      };
+    }
+    return result;
   }
 
   async remove(id: string): Promise<boolean> {

@@ -1,5 +1,10 @@
-export const jwtVerify = jest.fn(() => ({
-  payload: { sub: 'test-user', role: 'admin' }, // Mocked payload
+export const jwtVerify = jest.fn((token) => ({
+  payload: {
+    sub: 'test-user',
+    role: 'admin',
+    email: 'unit-test@example.com',
+    type: token === 'mocked_jwt_token_refresh' ? 'refresh' : 'access',
+  }, // Mocked payload
   protectedHeader: { alg: 'ES256' },
 }));
 
